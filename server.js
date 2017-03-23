@@ -25,6 +25,18 @@ Recipes.create(
 Recipes.create(
   'milkshake', ['2 tbsp cocoa', '2 cups vanilla ice cream', '1 cup milk']);
 
+//function for validating ensuring no missing fields
+const validateFields = (fields, req, res) => {
+  for (let i = 0; i < fields.length; i++) {
+    const field = fields[i];
+    if (!(field in req.body)) {
+      const message = `Missing '${field}' in request body`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+}
+
 // when the root of this router is called with GET, return
 // all current ShoppingList items
 app.get('/shopping-list', (req, res) => {
@@ -34,14 +46,15 @@ app.get('/shopping-list', (req, res) => {
 app.post('/shopping-list', jsonParser, (req, res) => {
   // ensure `name` and `budget` are in request body
   const requiredFields = ['name', 'budget'];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
-      console.error(message);
-      return res.status(400).send(message);
-    }
-  }
+  validateFields(requiredFields, req, res);
+  // for (let i=0; i<requiredFields.length; i++) {
+  //   const field = requiredFields[i];
+  //   if (!(field in req.body)) {
+  //     const message = `Missing \`${field}\` in request body`
+  //     console.error(message);
+  //     return res.status(400).send(message);
+  //   }
+  // }
 
   const item = ShoppingList.create(req.body.name, req.body.budget);
   res.status(201).json(item);
@@ -54,14 +67,15 @@ app.post('/shopping-list', jsonParser, (req, res) => {
 // call `ShoppingList.update` with updated item.
 app.put('/shopping-list/:id', jsonParser, (req, res) => {
   const requiredFields = ['name', 'budget', 'id'];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
-      console.error(message);
-      return res.status(400).send(message);
-    }
-  }
+  validateFields(requiredFields, req, res);
+  // for (let i=0; i<requiredFields.length; i++) {
+  //   const field = requiredFields[i];
+  //   if (!(field in req.body)) {
+  //     const message = `Missing \`${field}\` in request body`
+  //     console.error(message);
+  //     return res.status(400).send(message);
+  //   }
+  // }
   if (req.params.id !== req.body.id) {
     const message = (
       `Request path id (${req.params.id}) and request body id `
@@ -94,16 +108,37 @@ app.get('/recipes', (req, res) => {
 app.post('/recipes', jsonParser, (req, res) => {
   // ensure `name` and `budget` are in request body
   const requiredFields = ['name', 'ingredients'];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
-      console.error(message);
-      return res.status(400).send(message);
-    }
-  }
+  validateFields(requiredFields, req, res);
+  // for (let i=0; i<requiredFields.length; i++) {
+  //   const field = requiredFields[i];
+  //   if (!(field in req.body)) {
+  //     const message = `Missing \`${field}\` in request body`
+  //     console.error(message);
+  //     return res.status(400).send(message);
+  //   }
+  // }
   const item = Recipes.create(req.body.name, req.body.ingredients);
   res.status(201).json(item);
+});
+
+app.put('/recipes/:id', jsonParser, (req, res) => {
+  const requiredFields = ['name', 'ingredients', 'id'];
+  validateFields(requiredFields, req, res);
+
+  //check that params id equald req.body.id
+  if (req.params.id !== req.body.id) {
+    const message = `Request path id '${req.params.id}' and request body id '${req.body.id}' must match`;
+    console.error(message);
+    res.status(400).send(message);
+  }
+
+  console.log('Updating Recipes...');
+  const updatedRecipe = Recipes.update({
+    name: req.body.name,
+    ingredients: req.body.ingredients,
+    id: req.params.id
+  });
+  res.status(200).json(updatedRecipe);
 });
 
 app.delete('/recipes/:id', (req, res) => {
