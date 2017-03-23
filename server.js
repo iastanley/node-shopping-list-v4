@@ -47,14 +47,6 @@ app.post('/shopping-list', jsonParser, (req, res) => {
   // ensure `name` and `budget` are in request body
   const requiredFields = ['name', 'budget'];
   validateFields(requiredFields, req, res);
-  // for (let i=0; i<requiredFields.length; i++) {
-  //   const field = requiredFields[i];
-  //   if (!(field in req.body)) {
-  //     const message = `Missing \`${field}\` in request body`
-  //     console.error(message);
-  //     return res.status(400).send(message);
-  //   }
-  // }
 
   const item = ShoppingList.create(req.body.name, req.body.budget);
   res.status(201).json(item);
@@ -68,14 +60,7 @@ app.post('/shopping-list', jsonParser, (req, res) => {
 app.put('/shopping-list/:id', jsonParser, (req, res) => {
   const requiredFields = ['name', 'budget', 'id'];
   validateFields(requiredFields, req, res);
-  // for (let i=0; i<requiredFields.length; i++) {
-  //   const field = requiredFields[i];
-  //   if (!(field in req.body)) {
-  //     const message = `Missing \`${field}\` in request body`
-  //     console.error(message);
-  //     return res.status(400).send(message);
-  //   }
-  // }
+
   if (req.params.id !== req.body.id) {
     const message = (
       `Request path id (${req.params.id}) and request body id `
@@ -109,14 +94,7 @@ app.post('/recipes', jsonParser, (req, res) => {
   // ensure `name` and `budget` are in request body
   const requiredFields = ['name', 'ingredients'];
   validateFields(requiredFields, req, res);
-  // for (let i=0; i<requiredFields.length; i++) {
-  //   const field = requiredFields[i];
-  //   if (!(field in req.body)) {
-  //     const message = `Missing \`${field}\` in request body`
-  //     console.error(message);
-  //     return res.status(400).send(message);
-  //   }
-  // }
+
   const item = Recipes.create(req.body.name, req.body.ingredients);
   res.status(201).json(item);
 });
